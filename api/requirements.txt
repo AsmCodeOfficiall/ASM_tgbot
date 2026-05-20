@@ -1,0 +1,1 @@
+# Fledif: fastapi, uvicorn, sqlalchemy, aiosqlite, pydantic-settings

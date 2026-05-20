@@ -1,1 +1,1 @@
-// конфигурация tailwind
+// Ishak: content: ./*.{jsx,js} і components/**

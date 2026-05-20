@@ -1,0 +1,1 @@
+# Fledif: BOT_TOKEN, DATABASE_URL, DEV_TELEGRAM_ID_* з .env

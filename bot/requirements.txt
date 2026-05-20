@@ -1,0 +1,1 @@
+# Gleb: aiogram, apscheduler (або спільний api/requirements.txt — домовитись з Fledif)
