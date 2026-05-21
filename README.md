@@ -1,5 +1,13 @@
-# ASM_tgbot
+---
+title: ASM TgBot
+emoji: 🚀
+colorFrom: blue
+colorTo: green
+sdk: docker
+app_port: 7860
+---
 
+# ASM_tgbot
 Чотири папки — кожен працює в своїй, без зайвих вкладень.
 
 | Папка | Хто | Що робить |
@@ -7,9 +15,8 @@
 | **frontend/** | Ishak | Telegram Mini App (React) |
 | **api/** | Fledif | FastAPI, БД, бюджет, HMAC |
 | **bot/** | Gleb | Aiogram, стендапи, GitHub-алерти |
-| **deploy/** | Fledif | Docker, nginx, compose |
 
-Корінь: `.env.example`, `docker-compose.yml` — спільні налаштування.
+Корінь: `Dockerfile`, `run.py`, `.env.example` — спільні налаштування для Hugging Face.
 
 Гілка: **develop**.
 
