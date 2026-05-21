@@ -1,1 +1,5 @@
-# Gleb: aiogram, apscheduler (або спільний api/requirements.txt — домовитись з Fledif)
+# Ivan: aiogram, apscheduler (або спільний api/requirements.txt — домовитись з Fledif)
+logging
+aiogram
+dotenv
+apscheduler
