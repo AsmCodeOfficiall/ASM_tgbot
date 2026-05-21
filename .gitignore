@@ -6,3 +6,5 @@ venv/
 node_modules/
 frontend/dist/
 api/data/*.db
+
+.vscode
