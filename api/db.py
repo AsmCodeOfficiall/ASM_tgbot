@@ -22,6 +22,10 @@ class User(Base):
     role: Mapped[str] = mapped_column(String(32), default="developer")
     balance: Mapped[float] = mapped_column(Float, default=0.0)
 
+    # Дані для бота (стендапи Гліба)
+    standup_text: Mapped[str | None] = mapped_column(String(2000), nullable=True)
+    standup_notified: Mapped[bool] = mapped_column(default=False)
+
     transactions: Mapped[list["Transaction"]] = relationship(back_populates="user")
 
 
