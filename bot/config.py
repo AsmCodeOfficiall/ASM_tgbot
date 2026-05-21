@@ -1,16 +1,15 @@
-from pydantic import BaseModel
-from dotenv import load_dotenv
-from os import getenv
-load_dotenv()
+from pydantic_settings import BaseSettings
 
 
-class __Config():
+class __Settings(BaseSettings):
     BOT_TOKEN: str
     WEBAPP_URL: str
-    REPORT_CHAT_ID: str
+    TELEGRAM_REPORT_CHAT_ID: str
+    TELEGRAM_ALERT_CHAT_ID: str
+    GITHUB_WEBHOOK_SECRET: str
+
+    class Config:
+        env_file = ".env"
 
 
-config = __Config(
-    BOT_TOKEN = getenv("BOT_TOKEN"),
-    WEBAPP_URL = getenv("WEBAPP_URL")
-)
+settings = __Settings()
