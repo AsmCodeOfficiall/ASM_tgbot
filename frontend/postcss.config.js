@@ -1,1 +1,6 @@
-// Ishak: tailwind + autoprefixer
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};

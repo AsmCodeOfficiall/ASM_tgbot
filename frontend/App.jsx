@@ -1,62 +1,125 @@
-// Ishak: один екран — фонд, баланс, список; відкриває модалку нового проєкту
+import { useCallback, useEffect, useState } from "react";
+import WebApp from "@twa-dev/sdk";
+import { fetchApi } from "./api";
+import Dashboard from "./components/Dashboard";
+import ProjectModal from "./components/ProjectModal";
+import SuccessToast from "./components/SuccessToast";
+import TransactionList from "./components/TransactionList";
+import { useTelegramTheme } from "./hooks/useTelegramTheme";
+import { tg } from "./utils/theme";
 
-import Dashboard from "./components/dashboard";
+const EMPTY_DATA = { fund: 0, balance: 0, transactions: [] };
 
-//1 память для данных бэкенда
-const [data, setData] = useState({ fund: 0, balance: 0, transactions: [] });
+export default function App() {
+  useTelegramTheme();
 
-//2 память для крутилки загрузки
-const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(EMPTY_DATA);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState(null);
 
-//3 память для модельного окна проекта
-const [isModalOpen, setIsModalOpen] = useState(false);
-
-//функция которая берет данные из бэкенда
-const loadDashboard = async () => {   //async нужен что бы функция не зависала и не блокировала интерфейс пока ждет ответа от бэкенда
-    setIsLoading(true);
-    //если получаем данные из бэкенда:
+  const loadDashboard = useCallback(async () => {
+    setError(null);
     try {
-        
-        setData(result);
-    } catch (error) {
-    console.error('Error loading dashboard:', error);
-    } finally {
-        setIsLoading(false);
+      const result = await fetchApi("/api/dashboard");
+      setData({
+        fund: result.fund ?? 0,
+        balance: result.balance ?? 0,
+        transactions: result.transactions ?? [],
+      });
+      return true;
+    } catch (err) {
+      console.error("Dashboard load failed:", err);
+      setError(err.message || "Не вдалося завантажити дані");
+      return false;
     }
-        
-};
+  }, []);
 
-//при старте вызываем функцию загрузки данных
-useEffect(() => {    //useEffect нужен что бы вызвать функцию загрузки данных при старте
-    loadDashboard();
-}, []);   // пустой массив означает что функция загрузки данных будет вызвана только при старте
+  useEffect(() => {
+    (async () => {
+      setIsLoading(true);
+      await loadDashboard();
+      setIsLoading(false);
+    })();
+  }, [loadDashboard]);
 
+  useEffect(() => {
+    if (!successMessage) return undefined;
+    const timer = setTimeout(() => setSuccessMessage(null), 3500);
+    return () => clearTimeout(timer);
+  }, [successMessage]);
 
-const handleOpenModal = () => setIsModalOpen(true);
+  const handleOpenModal = () => {
+    WebApp.HapticFeedback.impactOccurred("light");
+    setIsModalOpen(true);
+  };
 
-const handleCloseModal = () => setIsModalOpen(false); 
+  const handleCloseModal = () => setIsModalOpen(false);
 
-return (
-    <div className = "p-4 min-h-screen flex flex-col gap-4">
+  const handleProjectSuccess = async () => {
+    await loadDashboard();
+    setSuccessMessage("Проєкт успішно додано!");
+  };
 
-        {isLoading ? (
-            <div className = "flex justify-center items-center h-40">
-                <span className = "text-gray-500">Завантаження...</span>
-            </div>
-        ) : (
-            <>
-                <Dashboard fund = {data.fund} balance = {data.balance} />
+  const handleRetry = async () => {
+    setIsLoading(true);
+    await loadDashboard();
+    setIsLoading(false);
+  };
 
-                <button onClick = {handleOpenModal} className = "w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl active:bg-blue-600 transition-colors">
-                    Додати проєкт
-                </button>
-                <TransactionList transactions = {data.transactions} />
-            </>
-        )}
+  return (
+    <div
+      className="min-h-screen flex flex-col gap-3 p-4 pb-6"
+      style={{
+        backgroundColor: tg.bg,
+        color: tg.text,
+        paddingBottom: "calc(1.5rem + env(safe-area-inset-bottom, 0px))",
+      }}
+    >
+      <SuccessToast message={successMessage} />
 
-        {isModalOpen && (<ProjectModal onClose = {handleCloseModal} onSuccess = {loadDashboard} />)}
-
+      {isLoading ? (
+        <div className="flex flex-1 justify-center items-center min-h-[50vh]">
+          <span style={{ color: tg.hint }}>Завантаження...</span>
         </div>
-);
+      ) : error ? (
+        <div className="flex flex-1 flex-col justify-center items-center gap-4 min-h-[50vh] text-center">
+          <p style={{ color: tg.hint }}>{error}</p>
+          <button
+            type="button"
+            onClick={handleRetry}
+            className="px-6 py-3 rounded-xl font-semibold"
+            style={{ backgroundColor: tg.button, color: tg.buttonText }}
+          >
+            Спробувати знову
+          </button>
+        </div>
+      ) : (
+        <>
+          <Dashboard fund={data.fund} balance={data.balance} />
 
+          {!isModalOpen && (
+            <button
+              type="button"
+              onClick={handleOpenModal}
+              className="w-full font-semibold py-3 px-4 rounded-xl shrink-0"
+              style={{ backgroundColor: tg.button, color: tg.buttonText }}
+            >
+              Додати проєкт
+            </button>
+          )}
 
+          <TransactionList transactions={data.transactions} />
+        </>
+      )}
+
+      {isModalOpen && (
+        <ProjectModal
+          onClose={handleCloseModal}
+          onSuccess={handleProjectSuccess}
+        />
+      )}
+    </div>
+  );
+}

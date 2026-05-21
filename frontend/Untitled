@@ -1,0 +1,44 @@
+
+
+
+
+    // Головна обгортка екрану. 
+    // p-4 додає відступи по краях, flex flex-col gap-4 робить елементи в стовпчик з відстанню між ними.
+    <div className="p-4 min-h-screen flex flex-col gap-4">
+      
+      {isLoading ? (
+        // Лоадер
+        <div className="flex justify-center items-center h-40">
+          <span className="text-gray-500">Завантаження...</span>
+        </div>
+      ) : (
+        // Основний контент
+        <>
+          <Dashboard fund={data.fund} balance={data.balance} />
+          
+          {/* Кнопка "Додати проєкт" */}
+          <button 
+            onClick={handleOpenModal}
+            // Tailwind-класи для гарної синьої кнопки
+            className="w-full bg-blue-500 text-white font-semibold py-3 px-4 rounded-xl active:bg-blue-600 transition-colors"
+          >
+            Додати проєкт
+          </button>
+          
+          <TransactionList transactions={data.transactions} />
+        </>
+      )}
+
+      {/* Модальне вікно (рендериться тільки якщо isModalOpen === true) */}
+      {isModalOpen && (
+        <ProjectModal 
+          onClose={handleCloseModal} 
+          onSuccess={loadDashboard} 
+        />
+      )}
+      
+    </div>
+  );
+};
+
+export default App;

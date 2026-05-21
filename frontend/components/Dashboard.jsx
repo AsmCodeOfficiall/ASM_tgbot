@@ -1,29 +1,38 @@
-// Ishak: 3 блоки — фонд команди, твій баланс, останні транзакції
-import React from 'react';
+import { formatUsd } from "../utils/format";
+import { tg } from "../utils/theme";
 
-const Dashboard = ({fund, balance}) => {
-    return (
-        <div className="flex flex-col gap-4">
+const Dashboard = ({ fund, balance }) => {
+  return (
+    <div className="flex flex-col gap-3">
+      <section
+        className="p-5 rounded-2xl"
+        style={{ backgroundColor: tg.secondaryBg }}
+      >
+        <h2 className="text-sm font-medium" style={{ color: tg.hint }}>
+          Загальний фонд команди
+        </h2>
+        <p className="text-3xl font-bold mt-1 tabular-nums">{formatUsd(fund)}</p>
+      </section>
 
-            <div className="bg-gray-100 p-5 rounded-2xl shadow-sm">
-                <h2 className="text-gray-500 text-sm font-medium">Загальний фонд команди</h2>
-
-                <p className = "text-3xl font-bold mt-1">${fund}</p>
-            </div>
-        
-
-
-            <div className = "bg-blue-50 p-5 rounded-2xl shadow-sm border border-blue-100">
-                <h2 className = "text-blue-500 text-sm font-medium">Мій доступний баланс</h2>
-                <p className = "text-3xl font-bold mt-1 text-vlue-700">${balance}</p>
-            </div>
-
-        </div>
-    );
+      <section
+        className="p-5 rounded-2xl"
+        style={{
+          backgroundColor: tg.sectionBg,
+          border: `1px solid ${tg.hint}`,
+        }}
+      >
+        <h2 className="text-sm font-medium" style={{ color: tg.link }}>
+          Особистий баланс
+        </h2>
+        <p
+          className="text-3xl font-bold mt-1 tabular-nums"
+          style={{ color: tg.accent }}
+        >
+          {formatUsd(balance)}
+        </p>
+      </section>
+    </div>
+  );
 };
 
 export default Dashboard;
-
-
-
-
