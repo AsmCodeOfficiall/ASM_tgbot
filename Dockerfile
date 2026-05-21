@@ -6,11 +6,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
 
 WORKDIR /app
 
-COPY frontend/package*.json ./frontend/
-RUN cd frontend && npm install
 
-COPY frontend/ ./frontend/
-RUN cd frontend && npm run build
 
 COPY api/requirements.txt ./api/
 RUN pip install --no-cache-dir -r api/requirements.txt
