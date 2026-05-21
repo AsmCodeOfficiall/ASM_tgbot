@@ -27,7 +27,6 @@ class User(Base):
         DateTime, default=lambda: datetime.now(timezone.utc)
     )
 
-    # Дані для бота (стендапи Гліба)
     standup_text: Mapped[str | None] = mapped_column(String(2000), nullable=True)
     standup_notified: Mapped[bool] = mapped_column(default=False)
 
