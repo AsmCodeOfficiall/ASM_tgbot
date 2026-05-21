@@ -1,6 +1,6 @@
 # Gleb: APScheduler — 19:00 розсилка в ЛС, 21:00 зведення тимліду (Europe/Kyiv)
 from aiogram import Router
-from bot import bot, dp
+from .bot import bot, dp
 from states import GetReportFSM
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
