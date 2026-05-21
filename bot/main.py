@@ -3,11 +3,11 @@ import asyncio
 import logging
 from api.db import init_db
 
-from scheduler import scheduler
-from bot_dp import dp, bot
+from bot.scheduler import scheduler
+from bot.bot_dp import dp, bot
 
-from handlers import router
-from scheduler import router_scheduler
+from bot.handlers import router
+from bot.scheduler import router_scheduler
 
 
 async def main():
@@ -15,7 +15,7 @@ async def main():
     dp.include_router(router=router_scheduler)
 
     scheduler.start()
-    await init_db() # NOTE: idk how Fledif inits db, correct later
+    # await init_db() # Fledif inits db in run.py lifespan, so bot doesn't need to
     await dp.start_polling(bot)
 
 
