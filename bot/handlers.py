@@ -5,7 +5,7 @@ from aiogram.types import Message
 
 from messages import MSG_START
 
-from .keyboard import keyboard_start
+from keyboards import keyboard_start
 
 
 router = Router("main_router")
