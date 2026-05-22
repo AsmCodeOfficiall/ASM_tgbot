@@ -10,7 +10,7 @@ async def main():
     dp.include_router(router=router)
     dp.include_router(router=router_scheduler)
     scheduler.start()
-    await dp.start_polling(bot)
+    logging.info("Bot setup complete (Webhook mode)")
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
