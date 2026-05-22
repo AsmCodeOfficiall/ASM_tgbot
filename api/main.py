@@ -13,11 +13,13 @@ from bot.scheduler import router_scheduler, scheduler
 
 WEBHOOK_PATH = "/webhook/telegram"
 
+import asyncio
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
     
-    # Initialize bot components
+    # Initialize bot components with IPv4
     import socket
     from aiogram.client.session.aiohttp import AiohttpSession
     class IPv4AiohttpSession(AiohttpSession):
@@ -30,38 +32,25 @@ async def lifespan(app: FastAPI):
     dp.include_router(router_scheduler)
     scheduler.start()
 
-    # Set webhook on startup
-    webhook_url = f"{settings.WEBAPP_URL.rstrip('/')}{WEBHOOK_PATH}"
+    # Delete webhook to ensure polling works
     try:
-        await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+        await bot.delete_webhook(drop_pending_updates=False)
     except Exception as e:
-        print(f"WARNING: Failed to set webhook to Telegram: {e}")
+        print(f"WARNING: Failed to delete webhook: {e}")
+    
+    # Start polling in background
+    polling_task = asyncio.create_task(dp.start_polling(bot, handle_signals=False))
     
     yield
-    # We do NOT delete the webhook on shutdown. 
-    # In cloud environments (like Hugging Face), the old container shuts down 
-    # AFTER the new container starts. Deleting it here would break the bot 
-    # after every deployment.
-    # await bot.delete_webhook()
+    
+    polling_task.cancel()
+    await bot.session.close()
 
 app = FastAPI(lifespan=lifespan)
 
 import traceback
 
 last_webhook_error = None
-
-@app.post(WEBHOOK_PATH)
-async def bot_webhook(update: dict):
-    global last_webhook_error
-    try:
-        telegram_update = Update(**update)
-        await dp.feed_update(bot=bot, update=telegram_update)
-        return {"status": "ok"}
-    except Exception as e:
-        err = traceback.format_exc()
-        last_webhook_error = err
-        print(err)
-        return {"status": "error", "message": err}
 
 @app.get("/debug_error")
 def get_debug_error():
