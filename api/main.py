@@ -71,8 +71,17 @@ app.include_router(github_router)
 @app.get("/test_telegram")
 async def test_telegram():
     try:
+        import socket
+        from aiogram.client.session.aiohttp import AiohttpSession
+        
+        class IPv4AiohttpSession(AiohttpSession):
+            def __init__(self, **kwargs):
+                super().__init__(**kwargs)
+                self._connector_init["family"] = socket.AF_INET
+                
+        bot.session = IPv4AiohttpSession()
         me = await bot.get_me()
-        return {"ok": True, "bot": me.username}
+        return {"ok": True, "bot": me.username, "msg": "IPv4 worked!"}
     except Exception as e:
         import traceback
         return {"ok": False, "error": str(e), "traceback": traceback.format_exc()}
