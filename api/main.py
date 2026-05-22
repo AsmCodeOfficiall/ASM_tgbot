@@ -86,25 +86,17 @@ async def test_net():
     import requests
     import aiohttp
     import time
+    import subprocess
     
     results = {}
     
-    # Test requests
+    # Test curl
     start = time.time()
     try:
-        r = requests.get("https://api.telegram.org/bot8768347694:AAGrJJ6ILGw3XNYgZKPsl5TDawPekmB2eNo/getMe", timeout=10)
-        results["requests"] = {"status": r.status_code, "time": time.time() - start}
+        proc = subprocess.run(["curl", "-I", "https://api.telegram.org/"], capture_output=True, text=True, timeout=10)
+        results["curl"] = {"stdout": proc.stdout, "stderr": proc.stderr, "time": time.time() - start}
     except Exception as e:
-        results["requests"] = {"error": str(e), "time": time.time() - start}
-        
-    # Test aiohttp
-    start = time.time()
-    try:
-        async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.telegram.org/bot8768347694:AAGrJJ6ILGw3XNYgZKPsl5TDawPekmB2eNo/getMe", timeout=10) as r:
-                results["aiohttp"] = {"status": r.status, "time": time.time() - start}
-    except Exception as e:
-        results["aiohttp"] = {"error": str(e), "time": time.time() - start}
+        results["curl"] = {"error": str(e), "time": time.time() - start}
         
     return results
 
