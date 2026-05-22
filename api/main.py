@@ -18,6 +18,9 @@ async def lifespan(app: FastAPI):
     await init_db()
     
     # Initialize bot components
+    from aiogram.client.session.aiohttp import AiohttpSession
+    bot.session = AiohttpSession()
+    
     dp.include_router(bot_router)
     dp.include_router(router_scheduler)
     scheduler.start()
