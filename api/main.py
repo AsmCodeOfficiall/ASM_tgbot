@@ -18,6 +18,9 @@ async def lifespan(app: FastAPI):
     await init_db()
     
     # Initialize bot components
+    from bot.bot_dp import IPv4AiohttpSession
+    bot.session = IPv4AiohttpSession()
+    
     dp.include_router(bot_router)
     dp.include_router(router_scheduler)
     scheduler.start()
