@@ -1,18 +1,18 @@
 # Gleb: APScheduler — 19:00 розсилка в ЛС, 21:00 зведення тимліду (Europe/Kyiv)
 from aiogram import Router
-from bot_dp import bot, dp
-from states import GetReportFSM
+from bot.bot_dp import bot, dp
+from bot.states import GetReportFSM
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.base import StorageKey
 from aiogram.types import Message
 
-from config import settings
+from bot.config import settings
 
 from apscheduler.job import Job
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
 
-from messages import MSG_REPORT_REQUEST, MSG_REPORT_ACCEPTED, MSG_REPORTS_MISSING
+from bot.messages import MSG_REPORT_REQUEST, MSG_REPORT_ACCEPTED, MSG_REPORTS_MISSING
 
 from sqlalchemy import select, update
 from api.db import async_session, User
@@ -21,7 +21,7 @@ import html
 import logging
 
 
-router_scheduler = Router("schedule_router")
+router_scheduler = Router()
 
 
 async def reports_request():
@@ -92,6 +92,14 @@ async def reports_send():
             text=MSG_REPORTS_MISSING
         )
         return
+
+    # If there are reports, combine them and send!
+    final_text = "📊 <b>Звітність команди за сьогодні:</b>\n\n" + "\n\n".join(reports)
+    await bot.send_message(
+        chat_id=settings.TELEGRAM_REPORT_CHAT_ID,
+        text=final_text,
+        parse_mode="HTML"
+    )
 
 
 @router_scheduler.message(GetReportFSM.waiting_for_report)

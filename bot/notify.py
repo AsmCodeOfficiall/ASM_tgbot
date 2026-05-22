@@ -1,7 +1,7 @@
 # Ivan: send_message у TELEGRAM_ALERT_CHAT_ID — GitHub і текст стендапу
 import logging
-from bot_dp import bot
-from config import settings
+from bot.bot_dp import bot
+from bot.config import settings
 
 async def send_github_alert(text: str):
     """Sends the formatted GitHub alert to the team chat."""

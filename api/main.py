@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from db import init_db
-from routes import router
-from routes_github import router as github_router
+from api.db import init_db
+from api.routes import router
+from api.routes_github import router as github_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):

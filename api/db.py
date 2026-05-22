@@ -4,7 +4,14 @@ from sqlalchemy import BigInteger, DateTime, Float, ForeignKey, Integer, String
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from config import settings
+from api.config import settings
+import os
+
+if settings.DATABASE_URL.startswith("sqlite"):
+    db_path = settings.DATABASE_URL.split("///")[-1]
+    db_dir = os.path.dirname(db_path)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
 
 engine = create_async_engine(settings.DATABASE_URL, echo=False)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)

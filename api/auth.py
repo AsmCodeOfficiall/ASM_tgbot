@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, unquote
 
 from fastapi import HTTPException, Request
 
-from config import settings
+from api.config import settings
 
 
 def _verify_init_data(init_data_raw: str, bot_token: str) -> dict:
@@ -37,6 +37,9 @@ async def get_current_user(request: Request) -> dict:
     init_data = request.headers.get("Authorization", "")
     if not init_data:
         raise HTTPException(status_code=401, detail="no auth header")
+
+    # Remove 'tma ' or 'Bearer ' prefix if present
+    init_data = init_data.split(" ")[-1]
 
     parsed = _verify_init_data(init_data, settings.BOT_TOKEN)
 

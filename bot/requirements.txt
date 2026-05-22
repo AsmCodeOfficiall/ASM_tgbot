@@ -1,5 +1,4 @@
 # Ivan: aiogram, apscheduler (або спільний api/requirements.txt — домовитись з Fledif)
-logging
 aiogram
-dotenv
+python-dotenv
 apscheduler

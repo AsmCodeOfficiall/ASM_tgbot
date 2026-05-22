@@ -3,12 +3,12 @@ from aiogram import Router
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 
-from messages import MSG_START
+from bot.messages import MSG_START
 
-from keyboards import keyboard_start
+from bot.keyboards import keyboard_start
 
 
-router = Router("main_router")
+router = Router()
 
 
 @router.message(CommandStart())
