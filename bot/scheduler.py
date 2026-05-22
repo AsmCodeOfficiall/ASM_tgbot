@@ -93,6 +93,14 @@ async def reports_send():
         )
         return
 
+    # If there are reports, combine them and send!
+    final_text = "📊 <b>Звітність команди за сьогодні:</b>\n\n" + "\n\n".join(reports)
+    await bot.send_message(
+        chat_id=settings.TELEGRAM_REPORT_CHAT_ID,
+        text=final_text,
+        parse_mode="HTML"
+    )
+
 
 @router_scheduler.message(GetReportFSM.waiting_for_report)
 async def handle_standup_report(message: Message, state: FSMContext):
