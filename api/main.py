@@ -83,7 +83,6 @@ def get_env():
 
 @app.get("/test_net")
 async def test_net():
-    import requests
     import aiohttp
     import time
     import subprocess
