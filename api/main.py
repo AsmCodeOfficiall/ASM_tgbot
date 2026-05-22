@@ -39,9 +39,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+from aiogram.types import ErrorEvent
 import traceback
 
 last_webhook_error = None
+
+@dp.errors()
+async def global_error_handler(event: ErrorEvent):
+    global last_webhook_error
+    # Format the traceback from the exception object
+    tb_str = "".join(traceback.format_exception(type(event.exception), event.exception, event.exception.__traceback__))
+    last_webhook_error = tb_str
+    print(f"AIOGRAM ERROR: {tb_str}")
 
 @app.get("/debug_error")
 def get_debug_error():
