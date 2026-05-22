@@ -8,7 +8,7 @@ from bot.messages import MSG_START
 from bot.keyboards import keyboard_start
 
 
-router = Router("main_router")
+router = Router()
 
 
 @router.message(CommandStart())

@@ -21,7 +21,7 @@ import html
 import logging
 
 
-router_scheduler = Router("schedule_router")
+router_scheduler = Router()
 
 
 async def reports_request():
