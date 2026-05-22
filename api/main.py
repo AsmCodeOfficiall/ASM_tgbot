@@ -18,8 +18,13 @@ async def lifespan(app: FastAPI):
     await init_db()
     
     # Initialize bot components
+    import socket
     from aiogram.client.session.aiohttp import AiohttpSession
-    bot.session = AiohttpSession()
+    class IPv4AiohttpSession(AiohttpSession):
+        def __init__(self, **kwargs):
+            super().__init__(**kwargs)
+            self._connector_init["family"] = socket.AF_INET
+    bot.session = IPv4AiohttpSession()
     
     dp.include_router(bot_router)
     dp.include_router(router_scheduler)
