@@ -81,6 +81,33 @@ def get_env():
     import os
     return dict(os.environ)
 
+@app.get("/test_net")
+async def test_net():
+    import requests
+    import aiohttp
+    import time
+    
+    results = {}
+    
+    # Test requests
+    start = time.time()
+    try:
+        r = requests.get("https://api.telegram.org/bot8768347694:AAGrJJ6ILGw3XNYgZKPsl5TDawPekmB2eNo/getMe", timeout=10)
+        results["requests"] = {"status": r.status_code, "time": time.time() - start}
+    except Exception as e:
+        results["requests"] = {"error": str(e), "time": time.time() - start}
+        
+    # Test aiohttp
+    start = time.time()
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.telegram.org/bot8768347694:AAGrJJ6ILGw3XNYgZKPsl5TDawPekmB2eNo/getMe", timeout=10) as r:
+                results["aiohttp"] = {"status": r.status, "time": time.time() - start}
+    except Exception as e:
+        results["aiohttp"] = {"error": str(e), "time": time.time() - start}
+        
+    return results
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
