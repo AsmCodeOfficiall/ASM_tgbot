@@ -38,11 +38,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+import traceback
+
 @app.post(WEBHOOK_PATH)
 async def bot_webhook(update: dict):
-    telegram_update = Update(**update)
-    await dp.feed_update(bot=bot, update=telegram_update)
-    return {"status": "ok"}
+    try:
+        telegram_update = Update(**update)
+        await dp.feed_update(bot=bot, update=telegram_update)
+        return {"status": "ok"}
+    except Exception as e:
+        err = traceback.format_exc()
+        print(err)
+        return {"status": "error", "message": err}
 
 app.add_middleware(
     CORSMiddleware,
