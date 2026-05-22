@@ -14,28 +14,52 @@ from bot.scheduler import router_scheduler, scheduler
 WEBHOOK_PATH = "/webhook/telegram"
 
 import asyncio
+from datetime import datetime
+
+execution_trace = []
+
+def add_trace(msg: str):
+    ts = datetime.now().strftime("%H:%M:%S")
+    execution_trace.append(f"[{ts}] {msg}")
+    print(f"TRACE: {msg}")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    add_trace("Lifespan started")
+    add_trace("Initializing DB...")
     await init_db()
+    add_trace("DB initialized")
     
+    add_trace("Including routers...")
     dp.include_router(bot_router)
     dp.include_router(router_scheduler)
+    add_trace("Routers included")
+    
+    add_trace("Starting scheduler...")
     scheduler.start()
-
+    add_trace("Scheduler started")
+    
     # Delete webhook to ensure polling works
     try:
+        add_trace("Deleting webhook...")
         await bot.delete_webhook(drop_pending_updates=False)
+        add_trace("Webhook deleted")
     except Exception as e:
-        print(f"WARNING: Failed to delete webhook: {e}")
-    
-    # Start polling in background
+        add_trace(f"WARNING: Failed to delete webhook: {e}")
+        
+    add_trace("Starting polling task...")
     polling_task = asyncio.create_task(dp.start_polling(bot, handle_signals=False))
+    add_trace("Polling task created")
     
     yield
     
+    add_trace("Lifespan shutting down...")
     polling_task.cancel()
+    add_trace("Polling task cancelled")
     await bot.session.close()
+    add_trace("Bot session closed")
+    scheduler.shutdown()
+    add_trace("Scheduler shutdown")
 
 app = FastAPI(lifespan=lifespan)
 
@@ -55,6 +79,10 @@ async def global_error_handler(event: ErrorEvent):
 @app.get("/debug_error")
 def get_debug_error():
     return {"last_error": last_webhook_error}
+
+@app.get("/trace")
+def get_trace():
+    return {"trace": execution_trace}
 
 app.add_middleware(
     CORSMiddleware,
