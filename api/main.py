@@ -48,16 +48,24 @@ app = FastAPI(lifespan=lifespan)
 
 import traceback
 
+last_webhook_error = None
+
 @app.post(WEBHOOK_PATH)
 async def bot_webhook(update: dict):
+    global last_webhook_error
     try:
         telegram_update = Update(**update)
         await dp.feed_update(bot=bot, update=telegram_update)
         return {"status": "ok"}
     except Exception as e:
         err = traceback.format_exc()
+        last_webhook_error = err
         print(err)
         return {"status": "error", "message": err}
+
+@app.get("/debug_error")
+def get_debug_error():
+    return {"last_error": last_webhook_error}
 
 app.add_middleware(
     CORSMiddleware,
