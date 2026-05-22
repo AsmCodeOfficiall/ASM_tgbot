@@ -2,7 +2,7 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from config import settings
+from bot.config import settings
 
 
 keyboard_start = InlineKeyboardMarkup(inline_keyboard=[

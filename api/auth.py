@@ -5,7 +5,7 @@ from urllib.parse import parse_qs, unquote
 
 from fastapi import HTTPException, Request
 
-from config import settings
+from api.config import settings
 
 
 def _verify_init_data(init_data_raw: str, bot_token: str) -> dict:
