@@ -1,17 +1,45 @@
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from aiogram.types import Update
 
 from api.db import init_db
 from api.routes import router
 from api.routes_github import router as github_router
+from bot.bot_dp import bot, dp
+from bot.config import settings
+from bot.handlers import router as bot_router
+from bot.scheduler import router_scheduler, scheduler
+
+WEBHOOK_PATH = "/webhook/telegram"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+    
+    # Initialize bot components
+    dp.include_router(bot_router)
+    dp.include_router(router_scheduler)
+    scheduler.start()
+
+    # Set webhook on startup
+    webhook_url = f"{settings.WEBAPP_URL.rstrip('/')}{WEBHOOK_PATH}"
+    try:
+        await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+    except Exception as e:
+        print(f"WARNING: Failed to set webhook to Telegram: {e}")
+    
     yield
+    # Optionally remove webhook on shutdown
+    await bot.delete_webhook()
 
 app = FastAPI(lifespan=lifespan)
+
+@app.post(WEBHOOK_PATH)
+async def bot_webhook(update: dict):
+    telegram_update = Update(**update)
+    await dp.feed_update(bot=bot, update=telegram_update)
+    return {"status": "ok"}
 
 app.add_middleware(
     CORSMiddleware,
