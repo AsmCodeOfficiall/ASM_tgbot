@@ -39,21 +39,11 @@ async def reports_request():
 
     for user_id in user_id_list:
         try:
-            # Send the standup questions
-            await bot.send_message(chat_id=user_id, text=MSG_REPORT_REQUEST)
-            
-            # Manually construct the FSM context for this specific user
-
-            # !WARNING in private chats user_id == chat_id, for groups they are different
-            new_user_storage_key = StorageKey(bot.id, user_id, user_id)
-
-            # In storage param we specify WHERE(in which DP) we need to create new user state
-            # Get storate from dp.storage
-            # Key is like certain cell in our storage
-            state = FSMContext(storage=dp.storage, key=new_user_storage_key)
-            
-            # Force the user into waiting_for_report state
-            await state.set_state(GetReportFSM.waiting_for_report)
+            from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+            markup = InlineKeyboardMarkup(inline_keyboard=[
+                [InlineKeyboardButton(text="✍️ Написати звіт", callback_data="write_report")]
+            ])
+            await bot.send_message(chat_id=user_id, text=MSG_REPORT_REQUEST, reply_markup=markup)
         except Exception as e:
             # Always catch exceptions in loops so one blocked bot doesn't break the whole schedule!
             logging.error(f"Failed to send request to {user_id}: {e}")
