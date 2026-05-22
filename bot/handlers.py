@@ -1,6 +1,6 @@
 # Ivan: /start + прийом відповідей стендапу (що зробив / які проблеми)
 from aiogram import Router
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.types import Message
 
 from bot.messages import MSG_START
@@ -13,8 +13,9 @@ from aiogram.fsm.context import FSMContext
 
 router = Router()
 
-@router.message(Command("start"))
-async def start(message: Message):
+@router.message(Command("start"), StateFilter("*"))
+async def start(message: Message, state: FSMContext):
+    await state.clear()
     await message.answer(text=MSG_START, 
                          reply_markup=keyboard_start
                          )
