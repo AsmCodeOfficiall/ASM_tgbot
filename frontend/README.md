@@ -1,16 +1,50 @@
-# frontend — Ishak
+# frontend — Ishak (Telegram Mini App)
 
-Працюй тільки тут. Без `src/` — усе на одному рівні, менше кліків.
+React + Vite + Tailwind + `@twa-dev/sdk`. Один екран (SPA), без react-router.
 
-| Файл / папка | Навіщо |
-|--------------|--------|
-| `App.jsx` | Головний екран |
-| `main.jsx` | Вхід React + TWA SDK |
-| `index.html` | HTML для Vite |
-| `index.css` | Стилі + themeParams |
-| `api.js` | Запити на /api/dashboard і /api/projects |
-| `components/` | Dashboard, модалка проєкту, список транзакцій |
-| `hooks/` | MainButton і тема Telegram |
-| `vite.config.js`, `tailwind.config.js` | Збірка |
+## Екран
 
-Один екран, без react-router. Сабміт проєкту — через MainButton.
+1. **Загальний фонд команди**
+2. **Особистий баланс**
+3. **Останні транзакції / проєкти**
+4. Кнопка «Додати проєкт» → модалка (Назва, Сума USD)
+5. Сабміт модалки — нативна **MainButton** Telegram
+6. Після успіху — toast «Проєкт успішно додано!»
+
+## Тема Telegram
+
+`hooks/useTelegramTheme.js` — кольори з `WebApp.themeParams` → CSS `--tg-theme-*`.
+
+## Hugging Face Space
+
+На HF все крутиться в одному Docker-контейнері на порту **7860**:
+
+- FastAPI віддає зібраний `frontend/dist` і API `/api/*`
+- **`VITE_API_URL` не задавай** (або порожній) — запити йдуть на той самий origin
+- `WEBAPP_URL` у боті = URL вашого Space (наприклад `https://USER-asm-tgbot.hf.space`)
+
+Локальна розробка:
+
+```bash
+# термінал 1 — бек + бот
+python run.py
+
+# термінал 2 — фронт з proxy на :7860
+cd frontend && npm install && npm run dev
+```
+
+Збірка для продакшену (Dockerfile робить це автоматично):
+
+```bash
+cd frontend && npm run build
+```
+
+## Структура
+
+| Файл | Навіщо |
+|------|--------|
+| `App.jsx` | Головний SPA |
+| `api.js` | `fetchApi` + `Authorization: tma` |
+| `components/` | Dashboard, TransactionList, ProjectModal, SuccessToast |
+| `hooks/` | `useTelegramTheme`, `useMainButton`, `useTelegramBackButton` |
+| `utils/` | `format.js`, `theme.js` |
