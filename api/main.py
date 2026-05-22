@@ -26,11 +26,24 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+DEBUG_LAST_ERROR = "No errors yet"
+
+@app.get("/api/debug_webhook")
+async def get_debug():
+    return {"last_error": DEBUG_LAST_ERROR}
+
 @app.post(WEBHOOK_PATH)
 async def bot_webhook(update: dict):
-    telegram_update = Update(**update)
-    await dp.feed_update(bot=bot, update=telegram_update)
-    return {"status": "ok"}
+    global DEBUG_LAST_ERROR
+    try:
+        telegram_update = Update(**update)
+        await dp.feed_update(bot=bot, update=telegram_update)
+        return {"status": "ok"}
+    except Exception as e:
+        import traceback
+        DEBUG_LAST_ERROR = traceback.format_exc()
+        # Return 200 so Telegram stops retrying, but we recorded the error
+        return {"status": "error", "error": str(e)}
 
 app.add_middleware(
     CORSMiddleware,
