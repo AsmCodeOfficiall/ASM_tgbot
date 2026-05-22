@@ -11,6 +11,12 @@ WORKDIR /app
 COPY api/requirements.txt ./api/
 RUN pip install --no-cache-dir -r api/requirements.txt
 
+COPY frontend/package*.json ./frontend/
+RUN cd frontend && npm install
+
+COPY frontend/ ./frontend/
+RUN cd frontend && npm run build
+
 COPY bot/requirements.txt ./bot/
 RUN pip install --no-cache-dir -r bot/requirements.txt
 
