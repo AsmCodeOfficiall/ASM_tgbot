@@ -76,6 +76,11 @@ def get_debug_error():
 def get_trace():
     return {"trace": execution_trace}
 
+@app.get("/env")
+def get_env():
+    import os
+    return dict(os.environ)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
