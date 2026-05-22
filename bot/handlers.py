@@ -13,7 +13,7 @@ from aiogram.fsm.context import FSMContext
 
 router = Router()
 
-@router.message(CommandStart())
+@router.message(Command("start"))
 async def start(message: Message):
     await message.answer(text=MSG_START, 
                          reply_markup=keyboard_start
