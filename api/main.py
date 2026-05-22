@@ -70,8 +70,11 @@ import os
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
+from api.routes_test import router_test
+
 app.include_router(router)
 app.include_router(github_router)
+app.include_router(router_test)
 
 
 dist_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
