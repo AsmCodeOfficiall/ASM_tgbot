@@ -16,7 +16,11 @@ async def lifespan(app: FastAPI):
     await init_db()
     # Set webhook on startup
     webhook_url = f"{settings.WEBAPP_URL.rstrip('/')}{WEBHOOK_PATH}"
-    await bot.set_webhook(url=webhook_url)
+    try:
+        await bot.set_webhook(url=webhook_url, drop_pending_updates=True)
+    except Exception as e:
+        print(f"WARNING: Failed to set webhook to Telegram: {e}")
+    
     yield
     # Optionally remove webhook on shutdown
     await bot.delete_webhook()
