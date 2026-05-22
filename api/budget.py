@@ -1,57 +1,27 @@
-"""
-Budget distribution logic.
-
-Distribution rule (per ТЗ):
-  10%  → team fund
-  30%  → each developer (up to 3)
-  ---
-  If fewer than 3 devs are configured (IDs == 0), the unassigned
-  30% shares are added back to the fund so no money is lost.
-"""
-from dataclasses import dataclass, field
-from typing import List
-
-FUND_SHARE = 0.10
-DEV_SHARE = 0.30
-MAX_DEVS = 3
+from dataclasses import dataclass
 
 
 @dataclass
 class BudgetSplit:
-    fund_amount: float          # total amount going to the team fund
-    dev_amount: float           # amount per developer
-    dev_ids: List[int]          # filtered list of active developer telegram IDs
-    remainder: float            # unallocated remainder (added to fund)
+    fund_amount: float
+    dev_amount: float
+    dev_ids: list[int]
 
 
-def calculate_split(amount: float, raw_dev_ids: List[int]) -> BudgetSplit:
-    """
-    Calculate budget distribution for a given project amount.
+def calculate_split(amount: float, raw_dev_ids: list[int]) -> BudgetSplit:
+    dev_ids = [d for d in raw_dev_ids if d != 0]
+    dev_count = len(dev_ids)
 
-    Args:
-        amount:      Total project amount in USD.
-        raw_dev_ids: List of developer Telegram IDs (0 means "not set").
+    fund_amount = round(amount * 0.10, 2)
 
-    Returns:
-        BudgetSplit with all amounts rounded to 2 decimal places.
-    """
-    active_devs = [d for d in raw_dev_ids if d and d != 0]
-
-    fund_base = round(amount * FUND_SHARE, 2)
-    dev_amount = round(amount * DEV_SHARE, 2)
-
-    # Money for devs that don't exist goes back to fund
-    missing_devs = MAX_DEVS - len(active_devs)
-    remainder = round(dev_amount * missing_devs, 2)
-
-    # Correct for floating-point drift on the last cent
-    total_check = fund_base + dev_amount * len(active_devs) + remainder
-    drift = round(amount - total_check, 2)
-    fund_total = round(fund_base + remainder + drift, 2)
+    if dev_count > 0:
+        total_dev_share = amount * 0.30 * 3
+        dev_amount = round(total_dev_share / dev_count, 2)
+    else:
+        dev_amount = 0.0
 
     return BudgetSplit(
-        fund_amount=fund_total,
+        fund_amount=fund_amount,
         dev_amount=dev_amount,
-        dev_ids=active_devs,
-        remainder=remainder,
+        dev_ids=dev_ids,
     )
