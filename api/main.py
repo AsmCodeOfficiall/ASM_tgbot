@@ -22,8 +22,7 @@ async def lifespan(app: FastAPI):
         print(f"WARNING: Failed to set webhook to Telegram: {e}")
     
     yield
-    # Optionally remove webhook on shutdown
-    await bot.delete_webhook()
+    # We do NOT delete the webhook on shutdown to prevent race conditions during Zero Downtime Deployments
 
 app = FastAPI(lifespan=lifespan)
 

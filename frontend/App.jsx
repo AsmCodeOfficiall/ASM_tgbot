@@ -83,17 +83,6 @@ export default function App() {
         <div className="flex flex-1 justify-center items-center min-h-[50vh]">
           <span style={{ color: tg.hint }}>Завантаження...</span>
         </div>
-      ) : error === "missing hash" || (error && error.includes("missing hash")) ? (
-        <div className="flex flex-1 flex-col justify-center items-center gap-6 min-h-[50vh] text-center p-6">
-          <div className="text-7xl mb-2">🔒</div>
-          <h2 className="text-2xl font-bold" style={{ color: tg.text }}>Доступ закрито</h2>
-          <p className="text-base leading-relaxed" style={{ color: tg.hint }}>
-            Цей фінансовий дашборд працює виключно всередині Telegram Mini App для гарантії безпеки.
-          </p>
-          <p className="text-sm mt-4 font-semibold" style={{ color: tg.hint }}>
-            Будь ласка, відкрийте його через кнопку "Відкрити дашборд" у нашому боті.
-          </p>
-        </div>
       ) : error ? (
         <div className="flex flex-1 flex-col justify-center items-center gap-4 min-h-[50vh] text-center p-4">
           <div className="text-5xl mb-2">⚠️</div>
