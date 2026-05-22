@@ -18,9 +18,6 @@ async def lifespan(app: FastAPI):
     await init_db()
     
     # Initialize bot components
-    from bot.bot_dp import IPv4AiohttpSession
-    bot.session = IPv4AiohttpSession()
-    
     dp.include_router(bot_router)
     dp.include_router(router_scheduler)
     scheduler.start()
@@ -67,6 +64,15 @@ from fastapi.responses import FileResponse
 
 app.include_router(router)
 app.include_router(github_router)
+
+@app.get("/test_telegram")
+async def test_telegram():
+    try:
+        me = await bot.get_me()
+        return {"ok": True, "bot": me.username}
+    except Exception as e:
+        import traceback
+        return {"ok": False, "error": str(e), "traceback": traceback.format_exc()}
 
 dist_path = os.path.join(os.path.dirname(__file__), "..", "frontend", "dist")
 if os.path.exists(dist_path):
