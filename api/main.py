@@ -14,14 +14,7 @@ from bot.scheduler import router_scheduler, scheduler
 WEBHOOK_PATH = "/webhook/telegram"
 
 import asyncio
-from datetime import datetime
-
-execution_trace = []
-
-def add_trace(msg: str):
-    ts = datetime.now().strftime("%H:%M:%S")
-    execution_trace.append(f"[{ts}] {msg}")
-    print(f"TRACE: {msg}")
+from utils.trace import execution_trace, add_trace, set_error
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -66,19 +59,18 @@ app = FastAPI(lifespan=lifespan)
 from aiogram.types import ErrorEvent
 import traceback
 
-last_webhook_error = None
-
 @dp.errors()
 async def global_error_handler(event: ErrorEvent):
-    global last_webhook_error
     # Format the traceback from the exception object
     tb_str = "".join(traceback.format_exception(type(event.exception), event.exception, event.exception.__traceback__))
-    last_webhook_error = tb_str
+    set_error(tb_str)
+    add_trace(f"AIOGRAM ERROR: {tb_str}")
     print(f"AIOGRAM ERROR: {tb_str}")
 
 @app.get("/debug_error")
 def get_debug_error():
-    return {"last_error": last_webhook_error}
+    from utils.trace import last_error
+    return {"last_error": last_error}
 
 @app.get("/trace")
 def get_trace():

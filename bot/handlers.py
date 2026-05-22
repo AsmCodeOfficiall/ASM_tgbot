@@ -11,14 +11,23 @@ from aiogram.types import CallbackQuery
 from bot.states import GetReportFSM
 from aiogram.fsm.context import FSMContext
 
+from utils.trace import add_trace
+
 router = Router()
 
 @router.message(Command("start"), StateFilter("*"))
 async def start(message: Message, state: FSMContext):
-    await state.clear()
-    await message.answer(text=MSG_START, 
-                         reply_markup=keyboard_start
-                         )
+    add_trace(f"Start handler ENTERED for user {message.from_user.id}")
+    try:
+        await state.clear()
+        add_trace("State cleared")
+        await message.answer(text=MSG_START, 
+                             reply_markup=keyboard_start
+                             )
+        add_trace("Message answered successfully")
+    except Exception as e:
+        add_trace(f"Start handler EXCEPTION: {e}")
+        raise
 
 @router.callback_query(F.data == "write_report")
 async def write_report_callback(callback: CallbackQuery, state: FSMContext):
