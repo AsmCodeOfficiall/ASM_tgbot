@@ -16,6 +16,12 @@ class Settings(BaseSettings):
             return 0
         return v
 
+    @field_validator("DATABASE_URL", mode="before")
+    def empty_string_to_db(cls, v):
+        if v == "" or v is None:
+            return "sqlite+aiosqlite:///./api/data/app.db"
+        return v
+
     class Config:
         env_file = ".env"
 
