@@ -5,6 +5,8 @@ from aiogram.types.web_app_info import WebAppInfo
 
 from bot.config import settings
 
-keyboard_start = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="Відкрити Дашборд", web_app=WebAppInfo(url=settings.WEBAPP_URL))]
-    ])
+inline_keyboard = []
+if settings.WEBAPP_URL:
+    inline_keyboard.append([InlineKeyboardButton(text="Відкрити Дашборд", web_app=WebAppInfo(url=settings.WEBAPP_URL))])
+
+keyboard_start = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
