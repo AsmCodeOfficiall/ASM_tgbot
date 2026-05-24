@@ -5,19 +5,22 @@ import Dashboard from "./components/Dashboard";
 import ProjectModal from "./components/ProjectModal";
 import SuccessToast from "./components/SuccessToast";
 import TransactionList from "./components/TransactionList";
+import OnboardingScreen from "./components/OnboardingScreen";
 import { useTelegramTheme } from "./hooks/useTelegramTheme";
 import { tg } from "./utils/theme";
 
-const EMPTY_DATA = { fund: 0, balance: 0, transactions: [] };
+const EMPTY_DATA = {fund: 0, balance: 0, transactions: [], hasTeam: null};
 
 export default function App() {
   useTelegramTheme();
 
-  const [data, setData] = useState(EMPTY_DATA);
-  const [isLoading, setIsLoading] = useState(true);
+  //const [data, setData] = useState({ fund: 0, balance: 0, transactions: [], hasTeam: false });
+  const [data, setData] = useState({EMPTY_DATA});
+  const [isLoading, setIsLoading] = useState(true);   // true
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
+
 
   const loadDashboard = useCallback(async () => {
     setError(null);
@@ -27,6 +30,7 @@ export default function App() {
         fund: result.fund ?? 0,
         balance: result.balance ?? 0,
         transactions: result.transactions ?? [],
+        hasTeam: result.has_team ?? false,
       });
       return true;
     } catch (err) {
@@ -68,6 +72,24 @@ export default function App() {
     setIsLoading(false);
   };
 
+  const handleCreateTeam = async(teamData) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      //setData((prevData) => ({
+      //  ...prevData,
+      //  hasTeam: true
+      //}));
+      await fetchApi("api/team", {method: "POST", body: JSON.stringify(teamData)});
+      await loadDashboard();
+    } catch(err) {
+      console.error("Помилка створення команди: ", err);
+      setError(err.message || "Не вдалося створити команду");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col gap-3 p-4 pb-6"
@@ -96,6 +118,8 @@ export default function App() {
             Спробувати знову
           </button>
         </div>
+      ) : data.hasTeam === false ? (
+        <OnboardingScreen onCreateTeam = {handleCreateTeam} />
       ) : (
         <>
           <Dashboard fund={data.fund} balance={data.balance} />
