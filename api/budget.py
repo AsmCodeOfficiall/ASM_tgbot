@@ -4,24 +4,31 @@ from dataclasses import dataclass
 @dataclass
 class BudgetSplit:
     fund_amount: float
-    dev_amount: float
-    dev_ids: list[int]
+    member_amounts: dict[int, float]
 
 
-def calculate_split(amount: float, raw_dev_ids: list[int]) -> BudgetSplit:
-    dev_ids = [d for d in raw_dev_ids if d != 0]
-    dev_count = len(dev_ids)
+def calculate_split(amount: float, member_percentages: dict[int, float]) -> BudgetSplit:
+    fund_share = 0.10
+    fund_amount = round(amount * fund_share, 2)
+    dev_pool = round(amount - fund_amount, 2)
 
-    fund_amount = round(amount * 0.10, 2)
+    if not member_percentages:
+        return BudgetSplit(fund_amount=round(fund_amount + dev_pool, 2), member_amounts={})
 
-    if dev_count > 0:
-        total_dev_share = amount * 0.30 * 3
-        dev_amount = round(total_dev_share / dev_count, 2)
-    else:
-        dev_amount = 0.0
+    total_percent = sum(max(0.0, pct) for pct in member_percentages.values())
+    if total_percent <= 0:
+        return BudgetSplit(fund_amount=round(fund_amount + dev_pool, 2), member_amounts={})
 
-    return BudgetSplit(
-        fund_amount=fund_amount,
-        dev_amount=dev_amount,
-        dev_ids=dev_ids,
-    )
+    member_amounts = {}
+    total_allocated = 0.0
+
+    for member_id, pct in member_percentages.items():
+        ratio = max(0.0, pct) / total_percent
+        member_amount = round(dev_pool * ratio, 2)
+        member_amounts[member_id] = member_amount
+        total_allocated += member_amount
+
+    remainder = round(dev_pool - total_allocated, 2)
+    fund_amount = round(fund_amount + remainder, 2)
+
+    return BudgetSplit(fund_amount=fund_amount, member_amounts=member_amounts)
