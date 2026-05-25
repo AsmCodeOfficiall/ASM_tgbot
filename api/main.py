@@ -23,8 +23,14 @@ async def lifespan(app: FastAPI):
     
     yield
     # We do NOT delete the webhook on shutdown to prevent race conditions during Zero Downtime Deployments
+    await bot.session.close()
 
 app = FastAPI(lifespan=lifespan)
+
+@app.get("/ping")
+@app.head("/ping")
+async def ping():
+    return {"status": "ok"}
 
 DEBUG_LAST_ERROR = "No errors yet"
 
