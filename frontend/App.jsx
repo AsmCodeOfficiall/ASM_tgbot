@@ -80,7 +80,7 @@ export default function App() {
       //  ...prevData,
       //  hasTeam: true
       //}));
-      await fetchApi("api/team", {method: "POST", body: JSON.stringify(teamData)});
+      await fetchApi("/api/teams", {method: "POST", body: JSON.stringify(teamData)});
       await loadDashboard();
     } catch(err) {
       console.error("Помилка створення команди: ", err);
