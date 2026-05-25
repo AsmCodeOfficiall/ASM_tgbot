@@ -20,6 +20,7 @@ class ProjectCreate(BaseModel):
 
 class TeamCreate(BaseModel):
     name: str = Field(min_length=1)
+    tax: float = Field(default=10.0, ge=0, le=100)
 
 
 class TeamJoin(BaseModel):
@@ -183,6 +184,7 @@ async def create_team(
                 name=team_data.name,
                 owner_user_id=user.id,
                 invite_code=invite_code,
+                tax_percent=team_data.tax,
             )
             session.add(team)
             await session.flush()
@@ -319,7 +321,7 @@ async def create_project(
         raise HTTPException(status_code=400, detail="team has no members")
 
     percentages = {member.user_id: member.payout_percent for member in members}
-    split = calculate_split(project_data.amount, percentages)
+    split = calculate_split(project_data.amount, percentages, team_fund_percent=team.tax_percent)
 
     project = Project(
         name=project_data.name,

@@ -48,6 +48,7 @@ class Team(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     owner_user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     invite_code: Mapped[str] = mapped_column(String(64), unique=True, nullable=False)
+    tax_percent: Mapped[float] = mapped_column(Float, default=10.0)
     created_at: Mapped[datetime] = mapped_column(
         DateTime, default=lambda: datetime.now(timezone.utc)
     )
@@ -118,6 +119,9 @@ def _ensure_team_columns(conn) -> None:
 
     if not _column_exists(conn, "transactions", "team_id"):
         conn.execute(text("ALTER TABLE transactions ADD COLUMN team_id INTEGER"))
+
+    if not _column_exists(conn, "teams", "tax_percent"):
+        conn.execute(text("ALTER TABLE teams ADD COLUMN tax_percent FLOAT DEFAULT 10.0"))
 
 
 async def init_db():

@@ -7,8 +7,8 @@ class BudgetSplit:
     member_amounts: dict[int, float]
 
 
-def calculate_split(amount: float, member_percentages: dict[int, float]) -> BudgetSplit:
-    fund_share = 0.10
+def calculate_split(amount: float, member_percentages: dict[int, float], team_fund_percent: float = 10.0) -> BudgetSplit:
+    fund_share = team_fund_percent / 100.0
     fund_amount = round(amount * fund_share, 2)
     dev_pool = round(amount - fund_amount, 2)
 
