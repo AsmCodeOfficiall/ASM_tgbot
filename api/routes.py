@@ -235,8 +235,9 @@ async def join_team_by_invite_code(
         await session.flush()
         member_to_return = member
     else:
-        if payout_percent is not None:
-            existing_member.payout_percent = payout_percent
+        # We do not update the payout_percent for existing members here.
+        # This prevents the bot (which passes 0.0 by default) from resetting their percent,
+        # and also prevents users from bypassing the leader's permission to change percents.
         member_to_return = existing_member
 
     await session.commit()
