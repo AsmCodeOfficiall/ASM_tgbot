@@ -11,6 +11,8 @@ from bot.config import settings
 from apscheduler.job import Job
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
+from apscheduler.triggers.interval import IntervalTrigger
+import aiohttp
 
 from bot.messages import MSG_REPORT_REQUEST, MSG_REPORT_ACCEPTED, MSG_REPORTS_MISSING
 
@@ -132,4 +134,23 @@ scheduler.add_job(
     reports_send,
     trigger=CronTrigger(hour=21, minute=0),
     name="reports_send"
+)
+
+async def self_ping():
+    """Pings the app to prevent Render from spinning down the free instance."""
+    try:
+        url = f"{settings.WEBAPP_URL.rstrip('/')}/ping"
+        # We use a custom User-Agent to avoid UptimeRobot/Render generic blocking
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                logging.info(f"Self-ping to {url}: {response.status}")
+    except Exception as e:
+        logging.error(f"Self-ping failed: {e}")
+
+# Add keep-awake ping job every 14 minutes
+scheduler.add_job(
+    self_ping,
+    trigger=IntervalTrigger(minutes=14),
+    name="self_ping"
 )
