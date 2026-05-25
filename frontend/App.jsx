@@ -38,7 +38,7 @@ export default function App() {
         balance: result.balance ?? 0,
         transactions: result.transactions ?? [],
         hasTeam: result.has_team ?? false,
-        teamName: result.team_name ?? "Без назви",
+        teamName: result.team?.name ?? "Без назви",
         inviteCode: result.team?.invite_code ?? "",
         role: result.role ?? "user",
         tax: result.tax ?? 10,
@@ -127,7 +127,7 @@ export default function App() {
             fund={data.fund} 
             balance={data.balance} 
             teamName={data.teamName}
-            role={role}          
+            role={data.role}          
             tax={data.tax}            
             projects={data.projects}
             transactions={data.transactions}

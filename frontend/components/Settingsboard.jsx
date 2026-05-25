@@ -13,7 +13,7 @@ const Settingsboard = ({ role, onBack, teamName, tax, members = [], inviteCode, 
   const [localTaxes, setLocalTaxes] = useState(() => {
     const initialTaxes = {};
     members.forEach((m) => {
-      initialTaxes[m.id] = m.personal_tax ?? 0;
+      initialTaxes[m.id] = m.payout_percent ?? 0;
     });
     return initialTaxes;
   });

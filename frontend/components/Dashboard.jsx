@@ -88,8 +88,7 @@ const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [],
 
       {activeTab === "projects" ? (
         <div className="flex flex-col gap-2 max-h-52 overflow-y-auto">
-          {fakeProjects.map((proj) => (       //
-          // {projects.map((proj) => (
+          {projects.map((proj) => (
             <div
               key={proj.id}
               onClick={() => setExpandedProjectId(expandedProjectId === proj.id ? null : proj.id)}
