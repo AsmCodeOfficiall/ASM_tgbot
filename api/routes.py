@@ -150,6 +150,7 @@ async def get_dashboard(
     return {
         "fund": fund,
         "balance": user.balance,
+        "has_team": bool(current_team),
         "team": {
             "id": current_team.id,
             "name": current_team.name,
@@ -207,37 +208,59 @@ async def create_team(
     raise HTTPException(status_code=500, detail="failed to generate invite code")
 
 
-@router.post("/api/teams/join")
-async def join_team(
-    join_data: TeamJoin,
-    user_data: dict = Depends(get_current_user),
-    session: AsyncSession = Depends(get_session),
-):
+async def join_team_by_invite_code(
+    session: AsyncSession,
+    user_data: dict,
+    invite_code: str,
+    payout_percent: float | None = 0.0,
+) -> tuple[Team, TeamMember]:
     user = await get_or_create_user(session, user_data)
-    team = await get_team_by_invite_code(session, join_data.invite_code)
+    team = await get_team_by_invite_code(session, invite_code)
+    
     if team is None:
-        raise HTTPException(status_code=404, detail="team not found")
+        raise ValueError("Team not found")
 
     existing_member = await get_user_team_member(session, user)
     if existing_member and existing_member.team_id != team.id:
-        raise HTTPException(status_code=400, detail="user already belongs to another team")
+        raise ValueError("User already belongs to another team")
 
     if existing_member is None:
         member = TeamMember(
             team_id=team.id,
             user_id=user.id,
             role="member",
-            payout_percent=join_data.payout_percent or 0.0,
+            payout_percent=payout_percent or 0.0,
         )
         session.add(member)
         await session.flush()
         member_to_return = member
     else:
-        if join_data.payout_percent is not None:
-            existing_member.payout_percent = join_data.payout_percent
+        if payout_percent is not None:
+            existing_member.payout_percent = payout_percent
         member_to_return = existing_member
 
     await session.commit()
+    return team, member_to_return
+
+
+@router.post("/api/teams/join")
+async def join_team(
+    join_data: TeamJoin,
+    user_data: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    try:
+        team, member = await join_team_by_invite_code(
+            session=session,
+            user_data=user_data,
+            invite_code=join_data.invite_code,
+            payout_percent=join_data.payout_percent
+        )
+    except ValueError as exc:
+        error_msg = str(exc)
+        if "not found" in error_msg.lower():
+            raise HTTPException(status_code=404, detail=error_msg)
+        raise HTTPException(status_code=400, detail=error_msg)
 
     return {
         "status": "success",
@@ -246,7 +269,7 @@ async def join_team(
             "name": team.name,
             "invite_code": team.invite_code,
         },
-        "member": serialize_member(member_to_return),
+        "member": serialize_member(member),
     }
 
 
