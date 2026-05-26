@@ -21,13 +21,17 @@ export default function OnboardingScreen({ onFinish }) {
         setIsSpinning(true);
 
         try {
-            const response = await fetchApi("/api/teams", {
-                method: "POST",
-                body: JSON.stringify({ 
-                    name: teamName, 
-                    tax: Number(tax)
-                })
-            });
+            const [response] = await Promise.all([
+                fetchApi("/api/teams", {
+                    method: "POST",
+                    body: JSON.stringify({ 
+                        name: teamName, 
+                        tax: Number(tax)
+                    })
+                }),
+                new Promise(resolve => setTimeout(resolve, 900))
+            ]);
+
             setInviteCode(response.team.invite_code);
             
             WebApp.HapticFeedback.notificationOccurred("success");
