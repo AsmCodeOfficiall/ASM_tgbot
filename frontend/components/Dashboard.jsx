@@ -31,7 +31,7 @@ const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [],
         <div>
           <h1 className="text-2xl font-bold">{teamName || "Без назви"}</h1>
           <p className="text-xs font-medium mt-0.5" style={{ color: tg.hint }}>
-            {role === "team_lead" ? "👑 Тімлід" : "💻 Розробник"}
+            {role === "leader" ? "👑 Тімлід" : "💻 Розробник"}
           </p>
         </div>
 
@@ -58,7 +58,7 @@ const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [],
         <p className="text-3xl font-bold mt-1 tabular-nums" style={{ color: tg.accent }}>{formatUsd(balance)}</p>
       </section>
 
-      {role === "team_lead" && (
+      {role === "leader" && (
         <button
           type="button"
           onClick={onAddProject}
