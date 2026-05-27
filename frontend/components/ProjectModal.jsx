@@ -7,6 +7,7 @@ import { tg } from "../utils/theme";
 
 const ProjectModal = ({ onClose, onSuccess }) => {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -30,6 +31,7 @@ const ProjectModal = ({ onClose, onSuccess }) => {
           method: "POST",
           body: JSON.stringify({
             name: name.trim(),
+            description: description.trim(),
             amount: parseFloat(amount),
           }),
         });
@@ -101,6 +103,24 @@ const ProjectModal = ({ onClose, onSuccess }) => {
             />
           </div>
 
+          <div>
+            <label className="block text-sm mb-1.5" style={{ color: tg.hint }}>
+              Опис проєкту
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Короткий опис, деталі або посилання на ТЗ..."
+              rows="3"
+              className="w-full rounded-xl px-4 py-3 outline-none resize-none"
+              style={{
+                backgroundColor: tg.secondaryBg,
+                color: tg.text,
+                border: `1px solid ${tg.hint}`,
+              }}
+            />
+          </div>
+            
           <div>
             <label className="block text-sm mb-1.5" style={{ color: tg.hint }}>
               Сума (USD)

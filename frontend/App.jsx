@@ -4,23 +4,30 @@ import { fetchApi } from "./api";
 import Dashboard from "./components/Dashboard";
 import ProjectModal from "./components/ProjectModal";
 import SuccessToast from "./components/SuccessToast";
-import TransactionList from "./components/TransactionList";
 import OnboardingScreen from "./components/OnboardingScreen";
 import { useTelegramTheme } from "./hooks/useTelegramTheme";
 import { tg } from "./utils/theme";
 
-const EMPTY_DATA = {fund: 0, balance: 0, transactions: [], hasTeam: null};
-
 export default function App() {
   useTelegramTheme();
 
-  //const [data, setData] = useState({ fund: 0, balance: 0, transactions: [], hasTeam: false });
-  const [data, setData] = useState({EMPTY_DATA});
-  const [isLoading, setIsLoading] = useState(true);   // true
+  const [data, setData] = useState({ 
+    fund: 0, 
+    balance: 0, 
+    transactions: [], 
+    hasTeam: null,
+    inviteCode: "",
+    teamName: "",
+    role: "user",
+    tax: 10,
+    projects: [],
+    members: []
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [successMessage, setSuccessMessage] = useState(null);
-
 
   const loadDashboard = useCallback(async () => {
     setError(null);
@@ -31,6 +38,12 @@ export default function App() {
         balance: result.balance ?? 0,
         transactions: result.transactions ?? [],
         hasTeam: result.has_team ?? false,
+        teamName: result.team?.name ?? "Без назви",
+        inviteCode: result.team?.invite_code ?? "",
+        role: result.role ?? "user",
+        tax: result.tax ?? 10,
+        projects: result.projects ?? [],
+        members: result.members ?? []
       });
       return true;
     } catch (err) {
@@ -72,23 +85,11 @@ export default function App() {
     setIsLoading(false);
   };
 
-  const handleCreateTeam = async(teamData) => {
+  const handleFinishOnboarding = async () => {
     setIsLoading(true);
-    setError(null);
-    try {
-      //setData((prevData) => ({
-      //  ...prevData,
-      //  hasTeam: true
-      //}));
-      await fetchApi("api/team", {method: "POST", body: JSON.stringify(teamData)});
-      await loadDashboard();
-    } catch(err) {
-      console.error("Помилка створення команди: ", err);
-      setError(err.message || "Не вдалося створити команду");
-    } finally {
-      setIsLoading(false);
-    }
-  }
+    await loadDashboard();
+    setIsLoading(false);
+  };
 
   return (
     <div
@@ -119,23 +120,21 @@ export default function App() {
           </button>
         </div>
       ) : data.hasTeam === false ? (
-        <OnboardingScreen onCreateTeam = {handleCreateTeam} />
+        <OnboardingScreen onFinish={handleFinishOnboarding} />
       ) : (
         <>
-          <Dashboard fund={data.fund} balance={data.balance} />
-
-          {!isModalOpen && (
-            <button
-              type="button"
-              onClick={handleOpenModal}
-              className="w-full font-semibold py-3 px-4 rounded-xl shrink-0"
-              style={{ backgroundColor: tg.button, color: tg.buttonText }}
-            >
-              Додати проєкт
-            </button>
-          )}
-
-          <TransactionList transactions={data.transactions} />
+          <Dashboard 
+            fund={data.fund} 
+            balance={data.balance} 
+            teamName={data.teamName}
+            role={data.role}          
+            tax={data.tax}            
+            projects={data.projects}
+            transactions={data.transactions}
+            inviteCode={data.inviteCode}
+            members={data.members}
+            onAddProject={handleOpenModal}
+          />
         </>
       )}
 
