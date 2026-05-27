@@ -134,6 +134,7 @@ export default function App() {
             inviteCode={data.inviteCode}
             members={data.members}
             onAddProject={handleOpenModal}
+            onRefresh={loadDashboard}
           />
         </>
       )}

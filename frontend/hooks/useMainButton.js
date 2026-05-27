@@ -7,11 +7,16 @@ export function useMainButton({ text, enabled, onClick, visible = true }) {
 
   useEffect(() => {
     if (!visible) return undefined;
-
     WebApp.MainButton.setText(text);
-    WebApp.MainButton.show();
 
-    return () => WebApp.MainButton.hide();
+    const timer = setTimeout(() => {
+      WebApp.MainButton.show();
+    }, 150);
+
+    return () => {
+      clearTimeout(timer);
+      WebApp.MainButton.hide();
+    };
   }, [text, visible]);
 
   useEffect(() => {
