@@ -13,7 +13,7 @@ export default function OnboardingScreen({ onFinish }) {
     const [copied, setCopied] = useState(false);
     
     const [inviteCode, setInviteCode] = useState("");
-    const botUsername = "AsmCode";
+    const botUsername = "AsmCode_bot";
     const realInviteLink = `https://t.me/${botUsername}?startapp=${inviteCode}`;
 
     const handleSubmit = async (e) => {

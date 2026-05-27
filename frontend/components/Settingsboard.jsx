@@ -6,7 +6,7 @@ import { tg } from "../utils/theme";
 const Settingsboard = ({ role, onBack, teamName, tax, members = [], inviteCode, onRefresh }) => {
   const [copied, setCopied] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const botUsername = "AsmCode"; 
+  const botUsername = "AsmCode_bot"; 
   const realInviteLink = `https://t.me/${botUsername}?startapp=${inviteCode}`;
   const isLead = role === "leader";
   const [localTax, setLocalTax] = useState(tax ?? 10);
