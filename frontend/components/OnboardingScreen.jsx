@@ -29,7 +29,7 @@ export default function OnboardingScreen({ onFinish }) {
                         tax: Number(tax)
                     })
                 }),
-                new Promise(resolve => setTimeout(resolve, 900))
+                new Promise(resolve => setTimeout(resolve, 700))
             ]);
 
             setInviteCode(response.team.invite_code);
@@ -127,8 +127,7 @@ export default function OnboardingScreen({ onFinish }) {
             <img 
                 src={gearIcon} 
                 alt="Налаштування" 
-                className={`w-36 h-36 mx-auto relative -top-12 mb-4 object-contain transition-transform
-                    duration-700 ease-in-out ${isSpinning ? "rotate-[360deg]" : "rotate-0"}`}
+                className={`w-36 h-36 mx-auto relative -top-12 mb-4 object-contain transition-transform duration-700 ease-in-out ${isSpinning ? "rotate-[360deg]" : "rotate-0"}`}
             />
             <h2 className="text-2xl font-bold mb-6 text-center" style={{ color: tg.text }}>
                 Налаштування команди

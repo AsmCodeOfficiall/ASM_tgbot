@@ -4,7 +4,7 @@ import { tg } from "../utils/theme";
 import TransactionList from "./TransactionList";
 import Settingsboard from "./Settingsboard";
 
-const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [], tax, members = [], inviteCode, onAddProject }) => {
+const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [], tax, members = [], inviteCode, onAddProject, onRefresh}) => {
   
   const [activeTab, setActiveTab] = useState("projects");
   const [expandedProjectId, setExpandedProjectId] = useState(null);
@@ -20,7 +20,7 @@ const Dashboard = ({ fund, balance, teamName, role, transactions, projects = [],
         tax={tax}       
         members={members} 
         inviteCode={inviteCode}
-        onRefresh={onAddProject} 
+        onRefresh={onRefresh}
       />
     );
   }
