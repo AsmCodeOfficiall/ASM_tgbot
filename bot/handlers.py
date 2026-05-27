@@ -40,7 +40,6 @@ async def start(message: Message):
                     session,
                     user_data,
                     invite_code,
-                    payout_percent=0.0,
                 )
             welcome_text = (
                 MSG_START

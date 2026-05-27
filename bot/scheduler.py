@@ -34,9 +34,14 @@ async def reports_request():
         )
         await session.commit()
 
-        # 2. GET USER IDs FROM DB
-        # You can also add .where(User.role == "developer") if you only want to ask devs
-        result = await session.execute(select(User.telegram_id))
+        # 2. GET USER IDs FROM DB (only select members who are not leaders, using distinct to avoid duplicates)
+        from api.db import TeamMember
+        result = await session.execute(
+            select(User.telegram_id)
+            .join(TeamMember, User.id == TeamMember.user_id)
+            .where(TeamMember.role != "leader")
+            .distinct()
+        )
         user_id_list = result.scalars().all()
 
     for user_id in user_id_list:
@@ -106,6 +111,17 @@ async def reports_send():
 
 @router_scheduler.message(GetReportFSM.waiting_for_report)
 async def handle_standup_report(message: Message, state: FSMContext):
+    if not message.text:
+        await message.answer("Будь ласка, надішліть ваш звіт текстовим повідомленням.")
+        return
+
+    if message.text.startswith("/"):
+        await state.clear()
+        if message.text.startswith("/start"):
+            from bot.handlers import start
+            await start(message)
+        return
+
     async with async_session() as session:
         # Find the user and update their standup text
         await session.execute(
