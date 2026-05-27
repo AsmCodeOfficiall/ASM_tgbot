@@ -8,7 +8,7 @@ const Settingsboard = ({ role, onBack, teamName, tax, members = [], inviteCode, 
   const [isSaving, setIsSaving] = useState(false);
   const botUsername = "AsmCode"; 
   const realInviteLink = `https://t.me/${botUsername}?startapp=${inviteCode}`;
-  const isLead = role === "team_lead";
+  const isLead = role === "leader";
   const [localTax, setLocalTax] = useState(tax ?? 10);
   const [localTaxes, setLocalTaxes] = useState(() => {
     const initialTaxes = {};
@@ -182,11 +182,11 @@ const Settingsboard = ({ role, onBack, teamName, tax, members = [], inviteCode, 
                           <span 
                             className="text-[9px] px-1.5 py-0.5 rounded uppercase font-bold"
                             style={{ 
-                              backgroundColor: member.role === "team_lead" ? "rgba(245, 158, 11, 0.15)" : tg.secondaryBg,
-                              color: member.role === "team_lead" ? "#f59e0b" : tg.link
+                              backgroundColor: member.role === "leader" ? "rgba(245, 158, 11, 0.15)" : tg.secondaryBg,
+                              color: member.role === "leader" ? "#f59e0b" : tg.link
                             }}
                           >
-                            {member.role === "team_lead" ? "Тімлід" : "Розробник"}
+                            {member.role === "leader" ? "Тімлід" : "Розробник"}
                           </span>
                         </div>
                         <span className="text-xs mt-0.5" style={{ color: tg.hint }}>
