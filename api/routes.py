@@ -2,6 +2,7 @@ import secrets
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
+from typing import List
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
@@ -16,6 +17,7 @@ router = APIRouter()
 class ProjectCreate(BaseModel):
     name: str = Field(min_length=1)
     amount: float = Field(gt=0)
+    description: str | None = None
 
 
 class TeamCreate(BaseModel):
@@ -104,6 +106,7 @@ def serialize_member(member: TeamMember) -> dict:
         "payout_percent": member.payout_percent,
         "username": member.user.username,
         "first_name": member.user.first_name,
+        "name": member.user.first_name or member.user.username or "Розробник",
         "balance": member.user.balance,
     }
 
@@ -148,10 +151,31 @@ async def get_dashboard(
         for tx in transactions
     ]
 
+    # Load projects for the team
+    projects_list = []
+    if current_team:
+        proj_result = await session.execute(
+            select(Project).where(Project.team_id == current_team.id).order_by(Project.created_at.desc())
+        )
+        projects = proj_result.scalars().all()
+        projects_list = [
+            {
+                "id": p.id,
+                "name": p.name,
+                "description": p.description,
+                "amount": p.amount,
+                "status": p.status,
+                "created_at": p.created_at.isoformat(),
+            }
+            for p in projects
+        ]
+
     return {
         "fund": fund,
         "balance": user.balance,
         "has_team": bool(current_team),
+        "role": team_member.role if team_member else "member",
+        "tax": current_team.tax_percent if current_team else 10,
         "team": {
             "id": current_team.id,
             "name": current_team.name,
@@ -160,6 +184,7 @@ async def get_dashboard(
         if current_team
         else None,
         "members": members,
+        "projects": projects_list,
         "transactions": tx_list,
     }
 
@@ -325,6 +350,7 @@ async def create_project(
 
     project = Project(
         name=project_data.name,
+        description=project_data.description,
         amount=project_data.amount,
         team_id=team.id,
     )
@@ -431,3 +457,54 @@ async def create_withdrawal(
         "status": "success",
         "balance": round(user.balance, 2),
     }
+
+
+# --- Bulk team settings update (Settingsboard) ---
+
+class MemberUpdate(BaseModel):
+    id: int
+    personal_tax: float = Field(ge=0, le=100)
+
+
+class TeamSettingsUpdate(BaseModel):
+    tax: float = Field(ge=0, le=100)
+    members: List[MemberUpdate] = []
+
+
+@router.put("/api/teams/members")
+async def bulk_update_team_settings(
+    payload: TeamSettingsUpdate,
+    user_data: dict = Depends(get_current_user),
+    session: AsyncSession = Depends(get_session),
+):
+    user = await get_or_create_user(session, user_data)
+    current_member = await get_user_team_member(session, user)
+
+    if current_member is None or current_member.role != "leader":
+        raise HTTPException(status_code=403, detail="only team leaders can update settings")
+
+    team = current_member.team
+    team.tax_percent = payload.tax
+
+    # Update each member's payout_percent
+    for member_update in payload.members:
+        result = await session.execute(
+            select(TeamMember).where(TeamMember.id == member_update.id)
+        )
+        target_member = result.scalar_one_or_none()
+
+        if target_member is None or target_member.team_id != team.id:
+            continue  # skip members that don't belong to this team
+
+        target_member.payout_percent = member_update.personal_tax
+
+    await session.commit()
+
+    # Return updated members list
+    updated_members = await get_team_members(session, team.id)
+    return {
+        "status": "success",
+        "tax": team.tax_percent,
+        "members": [serialize_member(m) for m in updated_members],
+    }
+

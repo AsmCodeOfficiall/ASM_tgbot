@@ -79,6 +79,7 @@ class Project(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     name: Mapped[str] = mapped_column(String(255), nullable=False)
+    description: Mapped[str | None] = mapped_column(String(2000), nullable=True)
     amount: Mapped[float] = mapped_column(Float, nullable=False)
     status: Mapped[str] = mapped_column(String(32), default="active")
     team_id: Mapped[int | None] = mapped_column(ForeignKey("teams.id"), nullable=True)
@@ -122,6 +123,9 @@ def _ensure_team_columns(conn) -> None:
 
     if not _column_exists(conn, "teams", "tax_percent"):
         conn.execute(text("ALTER TABLE teams ADD COLUMN tax_percent FLOAT DEFAULT 10.0"))
+
+    if not _column_exists(conn, "projects", "description"):
+        conn.execute(text("ALTER TABLE projects ADD COLUMN description TEXT"))
 
 
 async def init_db():

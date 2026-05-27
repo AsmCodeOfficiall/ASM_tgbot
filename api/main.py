@@ -8,12 +8,22 @@ from api.routes import router
 from api.routes_github import router as github_router
 from bot.bot_dp import bot, dp
 from bot.config import settings
+from bot.handlers import router as bot_router
+from bot.scheduler import scheduler, router_scheduler
 
 WEBHOOK_PATH = "/webhook/telegram"
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
+
+    # Connect bot routers so /start and standup handlers work
+    dp.include_router(bot_router)
+    dp.include_router(router_scheduler)
+
+    # Start the standup scheduler
+    scheduler.start()
+
     # Set webhook on startup
     webhook_url = f"{settings.WEBAPP_URL.rstrip('/')}{WEBHOOK_PATH}"
     try:
@@ -23,6 +33,7 @@ async def lifespan(app: FastAPI):
     
     yield
     # We do NOT delete the webhook on shutdown to prevent race conditions during Zero Downtime Deployments
+    scheduler.shutdown(wait=False)
     await bot.session.close()
 
 app = FastAPI(lifespan=lifespan)
