@@ -1,4 +1,4 @@
-# Ivan: aiogram, apscheduler (або спільний api/requirements.txt — домовитись з Fledif)
+# Ivan: aiogram, apscheduler (or shared api/requirements.txt — coordinate with Fledif)
 aiogram
 python-dotenv
 apscheduler

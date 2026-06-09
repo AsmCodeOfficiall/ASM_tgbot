@@ -1,2 +1,2 @@
-//  цвета телеги и запрос денег бэкенда 
+// Telegram colors and API request handling
 

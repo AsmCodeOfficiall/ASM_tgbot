@@ -1,4 +1,4 @@
-# Ivan: /start + прийом відповідей стендапу (що зробив / які проблеми)
+# Ivan: /start + receiving standup answers (what was done / what issues)
 from aiogram import Router
 from aiogram.filters import CommandStart
 from aiogram.types import Message

@@ -2,8 +2,8 @@ import WebApp from "@twa-dev/sdk";
 
 const initData = WebApp.initData;
 
-// Hugging Face Space: API і Mini App на одному домені (:7860), BASE_URL порожній.
-// Локально Vite proxy перенаправляє /api → localhost:7860
+// Hugging Face Space: API and Mini App on the same domain (:7860), BASE_URL is empty.
+// Locally Vite proxy redirects /api → localhost:7860
 const BASE_URL = import.meta.env.VITE_API_URL ?? "";
 
 function parseErrorDetail(detail) {
