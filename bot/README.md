@@ -1,13 +1,13 @@
 # bot — Gleb
 
-Працюй тільки тут. API чіпаєш мінімум — через `api/routes_github.py` і спільний `.env`.
+Work only here. Touch the API minimally — via `api/routes_github.py` and shared `.env`.
 
-| Файл | Навіщо |
-|------|--------|
-| `main.py` | Запуск Aiogram |
-| `handlers.py` | /start, стендап (FSM) |
-| `keyboard.py` | Кнопка «Відкрити дашборд» (Web App) |
-| `scheduler.py` | 19:00 питання, 21:00 зведення |
-| `notify.py` | Повідомлення в групу (GitHub + стендап) |
+| File | Purpose |
+|------|---------|
+| `main.py` | Aiogram startup |
+| `handlers.py` | /start, standup (FSM) |
+| `keyboard.py` | Open dashboard button (Web App) |
+| `scheduler.py` | 19:00 questions, 21:00 summary |
+| `notify.py` | Group messages (GitHub + standup) |
 
-Запуск: `python main.py` з папки bot.
+Run: `python main.py` from the bot folder.

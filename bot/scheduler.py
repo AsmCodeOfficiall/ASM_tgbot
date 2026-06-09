@@ -1,4 +1,4 @@
-# Gleb: APScheduler — 19:00 розсилка в ЛС, 21:00 зведення тимліду (Europe/Kyiv)
+# Gleb: APScheduler — 19:00 DM sending, 21:00 team lead summary (Europe/Kyiv)
 from aiogram import Router
 from bot.bot_dp import bot, dp
 from bot.states import GetReportFSM

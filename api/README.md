@@ -1,16 +1,16 @@
 # api — Fledif
 
-Усі файли в цій папці — твоя зона. Gleb сюди не комітить (крім узгоджених змін у `routes_github.py`).
+All files in this folder are your area. Gleb does not commit here (except agreed changes in `routes_github.py`).
 
-| Файл | Навіщо |
-|------|--------|
-| `main.py` | Запуск FastAPI |
-| `db.py` | SQLite + таблиці users, projects, transactions |
-| `auth.py` | Перевірка initData (HMAC) |
-| `budget.py` | 10/30/30/30 і dashboard |
+| File | Purpose |
+|------|---------|
+| `main.py` | FastAPI startup |
+| `db.py` | SQLite + users, projects, transactions tables |
+| `auth.py` | initData validation (HMAC) |
+| `budget.py` | 10/30/30/30 and dashboard |
 | `routes.py` | GET dashboard, POST projects |
-| `routes_github.py` | POST webhook — викликає bot/notify.py |
-| `config.py` | Змінні з .env |
-| `data/` | Файл бази |
+| `routes_github.py` | POST webhook — invokes bot/notify.py |
+| `config.py` | Variables from .env |
+| `data/` | Database file |
 
-Запуск (коли буде код): `uvicorn main:app --app-dir api` або з папки api.
+Run (when code is ready): `uvicorn main:app --app-dir api` or from the api folder.

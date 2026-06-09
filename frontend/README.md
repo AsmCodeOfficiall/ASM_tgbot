@@ -1,49 +1,49 @@
 # frontend — Ishak (Telegram Mini App)
 
-React + Vite + Tailwind + `@twa-dev/sdk`. Один екран (SPA), без react-router.
+React + Vite + Tailwind + `@twa-dev/sdk`. One screen (SPA), no react-router.
 
-## Екран
+## Screen
 
-1. **Загальний фонд команди**
-2. **Особистий баланс**
-3. **Останні транзакції / проєкти**
-4. Кнопка «Додати проєкт» → модалка (Назва, Сума USD)
-5. Сабміт модалки — нативна **MainButton** Telegram
-6. Після успіху — toast «Проєкт успішно додано!»
+1. **Team fund overview**
+2. **Personal balance**
+3. **Recent transactions / projects**
+4. Add project button → modal (Name, Amount USD)
+5. Modal submit uses native Telegram **MainButton**
+6. On success — toast “Project added successfully!”
 
-## Тема Telegram
+## Telegram Theme
 
-`hooks/useTelegramTheme.js` — кольори з `WebApp.themeParams` → CSS `--tg-theme-*`.
+`hooks/useTelegramTheme.js` — colors from `WebApp.themeParams` → CSS `--tg-theme-*`.
 
 ## Hugging Face Space
 
-На HF все крутиться в одному Docker-контейнері на порту **7860**:
+On HF this runs in a single Docker container on port **7860**:
 
-- FastAPI віддає зібраний `frontend/dist` і API `/api/*`
-- **`VITE_API_URL` не задавай** (або порожній) — запити йдуть на той самий origin
-- `WEBAPP_URL` у боті = URL вашого Space (наприклад `https://USER-asm-tgbot.hf.space`)
+- FastAPI serves built `frontend/dist` and API `/api/*`
+- **Do not set `VITE_API_URL`** (or leave it empty) — requests go to the same origin
+- `WEBAPP_URL` in the bot = your Space URL (for example `https://USER-asm-tgbot.hf.space`)
 
-Локальна розробка:
+Local development:
 
 ```bash
-# термінал 1 — бек + бот
+# terminal 1 — backend + bot
 python run.py
 
-# термінал 2 — фронт з proxy на :7860
+# terminal 2 — frontend with proxy to :7860
 cd frontend && npm install && npm run dev
 ```
 
-Збірка для продакшену (Dockerfile робить це автоматично):
+Production build (Dockerfile does this automatically):
 
 ```bash
 cd frontend && npm run build
 ```
 
-## Структура
+## Structure
 
-| Файл | Навіщо |
-|------|--------|
-| `App.jsx` | Головний SPA |
+| File | Purpose |
+|------|---------|
+| `App.jsx` | Main SPA |
 | `api.js` | `fetchApi` + `Authorization: tma` |
 | `components/` | Dashboard, TransactionList, ProjectModal, SuccessToast |
 | `hooks/` | `useTelegramTheme`, `useMainButton`, `useTelegramBackButton` |

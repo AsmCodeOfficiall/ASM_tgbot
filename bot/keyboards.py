@@ -1,4 +1,4 @@
-# Ivan: кнопка Web App — URL з WEBAPP_URL у .env
+# Ivan: Web App button — URL from WEBAPP_URL in .env
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.types.web_app_info import WebAppInfo
 

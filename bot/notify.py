@@ -1,4 +1,4 @@
-# Ivan: send_message у TELEGRAM_ALERT_CHAT_ID — GitHub і текст стендапу
+# Ivan: send_message to TELEGRAM_ALERT_CHAT_ID — GitHub and standup text
 import logging
 from bot.bot_dp import bot
 from bot.config import settings
