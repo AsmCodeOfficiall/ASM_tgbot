@@ -7,7 +7,7 @@
 ## Overview
 ASM TgBot is a Telegram Web App and backend stack for small dev teams to manage budget allocations, project contributions, and standup reporting in one workflow. It pairs a FastAPI service with an Aiogram bot and a React Mini App for in-chat budget control.
 
-Telegram Bot Link: https://t.me/ASM_TgBot
+Telegram Bot Link: https://t.me/AsmCode_bot
 
 ## Tech stack & architecture reasoning
 
